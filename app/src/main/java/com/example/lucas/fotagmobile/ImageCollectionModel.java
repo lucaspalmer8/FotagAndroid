@@ -1,4 +1,5 @@
 package com.example.lucas.fotagmobile;
+
 import java.util.ArrayList;
 
 public class ImageCollectionModel {
@@ -8,6 +9,12 @@ public class ImageCollectionModel {
 	private int m_ratingFilter = 0;
 
 	public ImageCollectionModel() {
+		for (int i = 0; i < 2; i++) {
+			m_images.add(new ImageModel(this, R.drawable.dolphin));
+			m_images.add(new ImageModel(this, R.drawable.duck));
+			m_images.add(new ImageModel(this, R.drawable.piglet));
+			m_images.add(new ImageModel(this, R.drawable.elephant));
+		}
 	}
 
 	public void setRatingFilter(int filter) {
@@ -31,6 +38,7 @@ public class ImageCollectionModel {
 
 	public void addObserver(ViewInterface view) {
 		m_observers.add(view);
+		notifyViews();
 	}
 
 	public void notifyViews() {
