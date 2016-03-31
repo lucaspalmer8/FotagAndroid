@@ -3,22 +3,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <LinearLayout
-        android:orientation="horizontal"
+    <com.example.lucas.fotagmobile.ImageCollectionView
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
-
-        <TableLayout
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:background="@color/material_blue_grey_800"
-            android:layout_weight="1"></TableLayout>
-
-        <TableLayout
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:background="@color/material_deep_teal_200"
-            android:layout_weight="1"></TableLayout>
-    </LinearLayout>
+    </com.example.lucas.fotagmobile.ImageCollectionView>
 </ScrollView>
 

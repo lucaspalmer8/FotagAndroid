@@ -8,16 +8,27 @@ import android.os.Bundle;
 import android.widget.ImageView;
 import android.widget.TableLayout;
 
+import java.util.ArrayList;
+
 public class MainActivity extends ActionBarActivity {
+    private static String SAVED_STATE = "saved_state_array";
+    private ImageCollectionModel m_imageCollectionModel = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        ImageCollectionModel model = new ImageCollectionModel();
+        m_imageCollectionModel = new ImageCollectionModel();
+
+        if (savedInstanceState != null) {
+            ArrayList<MobileImageModel> imageList =
+                    (ArrayList<MobileImageModel>)savedInstanceState.getSerializable(SAVED_STATE);
+            m_imageCollectionModel.setImageList(imageList);
+        }
 
         //Create view/controller and tell it about model.
-        ImageCollectionView.setMODEL(model);
+        ImageCollectionView.setMODEL(m_imageCollectionModel);
+        ImageCollectionListView.setMODEL(m_imageCollectionModel);
         setContentView(R.layout.layout);
         //ImageCollectionModel.ADD_OBSERVER();
         //ImageCollectionView view = new ImageCollectionView(model, getApplicationContext());
@@ -26,9 +37,15 @@ public class MainActivity extends ActionBarActivity {
 
 
         //Notify the views of the model.
-        model.notifyViews();
+        m_imageCollectionModel.notifyViews();
 
 
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putSerializable(SAVED_STATE, m_imageCollectionModel.getImages());
     }
 
     public static int calculateInSampleSize(

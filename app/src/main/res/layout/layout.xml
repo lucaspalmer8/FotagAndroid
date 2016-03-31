@@ -3,8 +3,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <com.example.lucas.fotagmobile.ImageCollectionView
+    <com.example.lucas.fotagmobile.ImageCollectionListView
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
-    </com.example.lucas.fotagmobile.ImageCollectionView>
+    </com.example.lucas.fotagmobile.ImageCollectionListView>
 </ScrollView>

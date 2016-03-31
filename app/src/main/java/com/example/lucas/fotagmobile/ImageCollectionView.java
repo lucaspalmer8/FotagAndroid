@@ -43,10 +43,10 @@ public class ImageCollectionView extends LinearLayout implements ViewInterface {
 	public void notifyView() {
 		TableLayout column1 = (TableLayout)findViewById(R.id.first_column);
 		TableLayout column2 = (TableLayout)findViewById(R.id.second_column);
-		column1.removeAllViews();
-		column2.removeAllViews();
+		//column1.removeAllViews();
+		//column2.removeAllViews();
 
-		for (int i = 0; i < MODEL.getImages().size(); i++) {
+		/*for (int i = 0; i < MODEL.getImages().size(); i++) {
 			ImageView image = new ImageView(getContext());
 			image.setImageBitmap(
 					MainActivity.decodeSampledBitmapFromResource(getResources(), MODEL.getImages().get(i).getResourceId(), 100, 100));
@@ -60,15 +60,21 @@ public class ImageCollectionView extends LinearLayout implements ViewInterface {
 					MainActivity.decodeSampledBitmapFromResource(getResources(), MODEL.getImages().get(i).getResourceId(), 100, 100));
 			column2.addView(image);
 			//break;
-		}
-		/*for (MobileImageView view : m_imageViews) {
+		}*/
+		for (MobileImageView view : m_imageViews) {
 			view.notifyView();
 		}
-		if (m_imageViews.size() != m_model.getImages().size()) {
+		if (m_imageViews.size() != MODEL.getImages().size()) {
 			m_imageViews = new ArrayList<MobileImageView>();
-			for(int i = 0; i < m_model.getImages().size(); i++) {
-				m_imageViews.add(new MobileImageView(m_model.getImages().get(i), getContext()));
+			column1.removeAllViews();
+			column2.removeAllViews();
+			for(int i = 0; i < MODEL.getImages().size(); i++) {
+				m_imageViews.add(new MobileImageView(MODEL.getImages().get(i), getContext()));
+				column1.addView(m_imageViews.get(m_imageViews.size() - 1));
+				if (++i >= MODEL.getImages().size()) break;
+				m_imageViews.add(new MobileImageView(MODEL.getImages().get(i), getContext()));
+				column2.addView(m_imageViews.get(m_imageViews.size() - 1));
 			}
-		}*/
+		}
 	}
 }

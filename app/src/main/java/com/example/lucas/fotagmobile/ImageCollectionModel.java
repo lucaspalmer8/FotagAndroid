@@ -5,15 +5,22 @@ import java.util.ArrayList;
 public class ImageCollectionModel {
 
 	private ArrayList<ViewInterface> m_observers = new ArrayList<ViewInterface>();
-	private ArrayList<ImageModel> m_images = new ArrayList<ImageModel>();
+	private ArrayList<MobileImageModel> m_images = new ArrayList<MobileImageModel>();
 	private int m_ratingFilter = 0;
 
 	public ImageCollectionModel() {
-		for (int i = 0; i < 2; i++) {
-			m_images.add(new ImageModel(this, R.drawable.dolphin));
-			m_images.add(new ImageModel(this, R.drawable.duck));
-			m_images.add(new ImageModel(this, R.drawable.piglet));
-			m_images.add(new ImageModel(this, R.drawable.elephant));
+		for (int i = 0; i < 4; i++) {
+			//m_images.add(new MobileImageModel(this, R.drawable.dolphin));
+			m_images.add(new MobileImageModel(this, R.drawable.duck));
+			m_images.add(new MobileImageModel(this, R.drawable.piglet));
+			//m_images.add(new MobileImageModel(this, R.drawable.elephant));
+		}
+	}
+
+	public void setImageList(ArrayList<MobileImageModel> images) {
+		m_images = images;
+		for (MobileImageModel model : m_images) {
+			model.setModel(this);
 		}
 	}
 
@@ -28,7 +35,7 @@ public class ImageCollectionModel {
 
 	public int getVisibleImages() {
 		int counter = 0;
-		for (ImageModel model : m_images) {
+		for (MobileImageModel model : m_images) {
 			if (model.getRating() >= m_ratingFilter) {
 				counter++;
 			}
@@ -47,7 +54,7 @@ public class ImageCollectionModel {
 		}
 	}
 
-	public ArrayList<ImageModel> getImages() {
+	public ArrayList<MobileImageModel> getImages() {
 		return m_images;
 	}
 }
