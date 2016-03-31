@@ -2,11 +2,7 @@ package com.example.lucas.fotagmobile;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.ColorFilter;
-import android.graphics.drawable.Drawable;
-import android.graphics.drawable.GradientDrawable;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,17 +13,21 @@ public class MobileImageView extends LinearLayout implements ViewInterface {
 
 	private MobileImageModel m_model;
 	private RatingBar m_ratingBar;
-	public static Bitmap STAR = null;
-	public static Bitmap EMPTY = null;
+	private static Bitmap STAR = null;
+	private static Bitmap EMPTY = null;
+	private static Bitmap RESET = null;
 
 	public MobileImageView(MobileImageModel model, Context context) {
 		super(context);
 
 		if (STAR == null) {
-			STAR = MainActivity.decodeSampledBitmapFromResource(getResources(), R.drawable.fullstar, 100, 100);
+			STAR = MainActivity.decodeSampledBitmapFromResource(getResources(), R.drawable.fullstar, 50, 50);
 		}
 		if (EMPTY == null) {
-			EMPTY = MainActivity.decodeSampledBitmapFromResource(getResources(), R.drawable.emptystar, 100, 100);
+			EMPTY = MainActivity.decodeSampledBitmapFromResource(getResources(), R.drawable.emptystar, 50, 50);
+		}
+		if (RESET == null) {
+			RESET = MainActivity.decodeSampledBitmapFromResource(getResources(), R.drawable.reset, 50, 50);
 		}
 		m_model = model;
 		m_ratingBar = new RatingBar(m_model.getRating(), getContext());
@@ -43,7 +43,7 @@ public class MobileImageView extends LinearLayout implements ViewInterface {
 		ImageView image = new ImageView(getContext());
 		image.setLayoutParams(imagelp);
 		image.setImageBitmap(
-				MainActivity.decodeSampledBitmapFromResource(getResources(), m_model.getResourceId(), 100, 100));
+				MainActivity.decodeSampledBitmapFromResource(getResources(), m_model.getResourceId(), 50, 50));
 		addView(image);
 		addView(m_ratingBar);
 	}
@@ -96,6 +96,22 @@ public class MobileImageView extends LinearLayout implements ViewInterface {
 		}
 	}
 
+	private class ResetButton extends ImageView {
+		public ResetButton(Context context) {
+			super(context);
+			LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(100, 100);
+			setLayoutParams(lp);
+			setImageBitmap(RESET);
+			setOnClickListener(new OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					m_model.setRating(0);
+					notifyView();
+				}
+			});
+		}
+	}
+
 	private class RatingBar extends LinearLayout {
 		private int m_rating;
 	
@@ -107,6 +123,7 @@ public class MobileImageView extends LinearLayout implements ViewInterface {
 			setLayoutParams(lp);
 			setOrientation(LinearLayout.HORIZONTAL);
 			setBackgroundColor(Color.WHITE);
+			addView(new ResetButton(context));
 			for (int i = 1; i <= rating; i++) {
 				addView(new FullStar(i, getContext()));
 			}
@@ -121,6 +138,7 @@ public class MobileImageView extends LinearLayout implements ViewInterface {
 			}
 			m_rating = rating;
 			removeAllViews();
+			addView(new ResetButton(getContext()));
 			for (int i = 1; i <= rating; i++) {
 				addView(new FullStar(i, getContext()));
 			}

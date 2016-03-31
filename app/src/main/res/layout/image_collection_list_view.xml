@@ -9,6 +9,5 @@
         android:id="@+id/column"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:background="@color/material_blue_grey_800"
         android:layout_weight="1"></TableLayout>
 </LinearLayout>

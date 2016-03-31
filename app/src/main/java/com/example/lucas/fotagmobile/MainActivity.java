@@ -28,6 +28,8 @@ import java.util.ArrayList;
 public class MainActivity extends ActionBarActivity {
     private static String SAVED_STATE = "saved_state_array";
     private static String SAVED_RATING = "saved_rating";
+    private static Bitmap STAR = null;
+    private static Bitmap EMPTY = null;
     private ImageCollectionModel m_imageCollectionModel = null;
     private int[] m_ratingids = {R.id.imageView1, R.id.imageView2, R.id.imageView3, R.id.imageView4, R.id.imageView5};
     private View m_menu;
@@ -35,6 +37,12 @@ public class MainActivity extends ActionBarActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (STAR == null) {
+            STAR = MainActivity.decodeSampledBitmapFromResource(getResources(), R.drawable.fullstar, 50, 50);
+        }
+        if (EMPTY == null) {
+            EMPTY = MainActivity.decodeSampledBitmapFromResource(getResources(), R.drawable.emptystar, 50, 50);
+        }
 
         m_imageCollectionModel = new ImageCollectionModel();
 
@@ -103,12 +111,14 @@ public class MainActivity extends ActionBarActivity {
         view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                m_imageCollectionModel.loadImages();
             }
         });
         view = (ImageView) m_menu.findViewById(R.id.resetButton);
         view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                m_imageCollectionModel.resetImages();
             }
         });
 
@@ -127,11 +137,11 @@ public class MainActivity extends ActionBarActivity {
         ImageView view;
         for (int i = 0; i < m_imageCollectionModel.getRatingFilter(); i++) {
             view = (ImageView) m_menu.findViewById(m_ratingids[i]);
-            view.setImageBitmap(MobileImageView.STAR);
+            view.setImageBitmap(STAR);
         }
         for (int i = m_imageCollectionModel.getRatingFilter(); i < m_ratingids.length; i++) {
             view = (ImageView) m_menu.findViewById(m_ratingids[i]);
-            view.setImageBitmap(MobileImageView.EMPTY);
+            view.setImageBitmap(EMPTY);
         }
     }
 

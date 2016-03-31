@@ -9,12 +9,26 @@ public class ImageCollectionModel {
 	private int m_ratingFilter = 0;
 
 	public ImageCollectionModel() {
-		for (int i = 0; i < 4; i++) {
-			//m_images.add(new MobileImageModel(this, R.drawable.dolphin));
-			m_images.add(new MobileImageModel(this, R.drawable.duck));
-			m_images.add(new MobileImageModel(this, R.drawable.piglet));
-			//m_images.add(new MobileImageModel(this, R.drawable.elephant));
-		}
+	}
+
+	public void loadImages() {
+		m_images = new ArrayList<MobileImageModel>();
+		m_images.add(new MobileImageModel(this, R.drawable.dolphin));
+		m_images.add(new MobileImageModel(this, R.drawable.duck));
+		m_images.add(new MobileImageModel(this, R.drawable.piglet));
+		m_images.add(new MobileImageModel(this, R.drawable.elephant));
+		m_images.add(new MobileImageModel(this, R.drawable.fish));
+		m_images.add(new MobileImageModel(this, R.drawable.camelian));
+		m_images.add(new MobileImageModel(this, R.drawable.camel));
+		m_images.add(new MobileImageModel(this, R.drawable.weasel));
+		m_images.add(new MobileImageModel(this, R.drawable.goose));
+		m_images.add(new MobileImageModel(this, R.drawable.cobra));
+		notifyViews();
+	}
+
+	public void resetImages() {
+		m_images = new ArrayList<MobileImageModel>();
+		notifyViews();
 	}
 
 	public void setImageList(ArrayList<MobileImageModel> images) {
