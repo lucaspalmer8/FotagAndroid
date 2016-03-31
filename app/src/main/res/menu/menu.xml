@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/loadbutton"
+        android:icon="@drawable/loadicon"
+        app:showAsAction="always"
+        android:title="Load" />
+    <item
+        android:id="@+id/resetfilter"
+        android:icon="@drawable/reset"
+        app:showAsAction="always"
+        android:title="Reset" />
+    <item
+        android:id="@+id/star1"
+        android:icon="@drawable/emptystar"
+        app:showAsAction="always"
+        android:title="1 Star" />
+    <item
+        android:id="@+id/star2"
+        android:icon="@drawable/emptystar"
+        app:showAsAction="always"
+        android:title="2 Star" />
+    <item
+        android:id="@+id/star3"
+        android:icon="@drawable/emptystar"
+        app:showAsAction="always"
+        android:title="3 Star" />
+    <item
+        android:id="@+id/star4"
+        android:icon="@drawable/emptystar"
+        app:showAsAction="always"
+        android:title="4 Star" />
+    <item
+        android:id="@+id/star5"
+        android:icon="@drawable/emptystar"
+        app:showAsAction="always"
+        android:title="5 Star" />
+</menu>
+

@@ -17,8 +17,8 @@ public class MobileImageView extends LinearLayout implements ViewInterface {
 
 	private MobileImageModel m_model;
 	private RatingBar m_ratingBar;
-	private static Bitmap STAR = null;
-	private static Bitmap EMPTY = null;
+	public static Bitmap STAR = null;
+	public static Bitmap EMPTY = null;
 
 	public MobileImageView(MobileImageModel model, Context context) {
 		super(context);
