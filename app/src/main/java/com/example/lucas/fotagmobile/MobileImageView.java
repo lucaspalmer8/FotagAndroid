@@ -1,20 +1,16 @@
 package com.example.lucas.fotagmobile;
 
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
-import android.net.Uri;
 import android.os.AsyncTask;
-import android.provider.MediaStore;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
-import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.net.URL;
 
@@ -26,11 +22,10 @@ public class MobileImageView extends LinearLayout implements ViewInterface {
 	private static Bitmap EMPTY = null;
 	private static Bitmap RESET = null;
 
-	private Bitmap bmp;
+	private Bitmap bmp = null;
 
 	public MobileImageView(MobileImageModel model, Context context) {
 		super(context);
-
 		if (STAR == null) {
 			STAR = MainActivity.decodeSampledBitmapFromResource(getResources(), R.drawable.fullstar, 50, 50);
 		}
@@ -62,7 +57,6 @@ public class MobileImageView extends LinearLayout implements ViewInterface {
 						InputStream in = new URL(m_model.getUri()).openStream();
 						bmp = BitmapFactory.decodeStream(in);
 					} catch (Exception e) {
-						// log error
 					}
 					return null;
 				}
@@ -79,18 +73,15 @@ public class MobileImageView extends LinearLayout implements ViewInterface {
 			image.setImageBitmap(
 					MainActivity.decodeSampledBitmapFromResource(getResources(), m_model.getResourceId(), 50, 50));
 		}
+
 		image.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				m_model.getMainActivity().showImage(m_model.getResourceId(), m_model.getUri());
+				m_model.getMainActivity().showImage(m_model.getResourceId(), m_model.getUri(), bmp);
 			}
 		});
 		addView(image);
 		addView(m_ratingBar);
-	}
-
-	public int getRating() {
-		return m_model.getRating();
 	}
 	
 	@Override

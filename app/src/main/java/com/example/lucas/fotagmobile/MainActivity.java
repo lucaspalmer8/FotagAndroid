@@ -6,8 +6,7 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.net.Uri;
-import android.provider.MediaStore;
+import android.os.AsyncTask;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -16,6 +15,8 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
 
@@ -23,15 +24,22 @@ public class MainActivity extends ActionBarActivity {
     //For saving and restoring state.
     private static String SAVED_STATE = "saved_state_array";
     private static String SAVED_RATING = "saved_rating";
+
     //To save memory, reuse the same images.
     private static Bitmap STAR = null;
     private static Bitmap EMPTY = null;
+
     //Model that stores all the image data.
     private ImageCollectionModel m_imageCollectionModel;
+
     //Ids of every rating bar star.
     private int[] m_ratingIds = {R.id.imageView1, R.id.imageView2, R.id.imageView3, R.id.imageView4, R.id.imageView5};
+
     //Menu bar reference to make changes.
     private View m_menu;
+
+    //Bitmap member for decoding checking if provided uri is valid.
+    private Bitmap m_bitmap;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,7 +84,7 @@ public class MainActivity extends ActionBarActivity {
         ImageView view;
         for (int i = 0; i < m_imageCollectionModel.getRatingFilter(); i++) {
             view = (ImageView) m_menu.findViewById(m_ratingIds[i]);
-            final int k = 1;
+            final int k = i;
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -112,7 +120,7 @@ public class MainActivity extends ActionBarActivity {
             public void onClick(View v) {
                 final EditText txtUrl = new EditText(v.getContext());
 
-                txtUrl.setText("http://www.librarising.com/astrology/celebs/images2/QR/queenelizabethii.jpg");
+                //txtUrl.setHint("http://www.librarising.com/astrology/celebs/images2/QR/queenelizabethii.jpg");
                 final View v2 = v;
                 new AlertDialog.Builder(v.getContext())
                         .setTitle("Image Uri Selection")
@@ -151,33 +159,47 @@ public class MainActivity extends ActionBarActivity {
         mActionBar.setDisplayShowCustomEnabled(true);
     }
 
-    public void showImage(int id, String uri) {
+    public void showImage(int id, String uri, Bitmap bitmap) {
         Intent i = new Intent(getApplicationContext(), ImageDialog.class);
+        if (bitmap != null) {
+            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
+            byte[] byteArray = stream.toByteArray();
+            i.putExtra(ImageDialog.IMAGE_BITMAP, byteArray);
+        }
         i.putExtra(ImageDialog.IMAGE_ID, id);
         i.putExtra(ImageDialog.IMAGE_URI, uri);
         startActivity(i);
     }
 
     public void addUri(String uri, View v) {
-        //Bitmap bitmap = null;
-        Bitmap bmp = null;
+        final String uri1 = uri;
+        final View v2 = v;
+        new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground(Void... params) {
+                m_bitmap = null;
+                try {
+                    InputStream in = new URL(uri1).openStream();
+                    m_bitmap = BitmapFactory.decodeStream(in);
+                } catch (Exception e) {
+                }
+                return null;
+            }
 
-        /*try {
-            bmp = MediaStore.Images.Media.getBitmap(this.getContentResolver(), Uri.parse("content://" + uri));
-            //URL url = new URL(uri);
-            //bmp = BitmapFactory.decodeStream(url.openConnection().getInputStream());
-            //bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), Uri.parse("file://" + uri));
-        } catch (Exception e) {
-            System.out.println("Ehhhhhhhhhhhhhhhhhh:   " + e);
-            System.out.println(uri);
-            new AlertDialog.Builder(v.getContext())
-                    .setTitle("Error")
-                    .setMessage("Not a valid url!")
-                    .setPositiveButton("Ok", null)
-                    .show();
-            return;
-        }*/
-        m_imageCollectionModel.addImage(new MobileImageModel(m_imageCollectionModel, uri));
+            @Override
+            protected void onPostExecute(Void result) {
+                if (m_bitmap == null) {
+                    new AlertDialog.Builder(v2.getContext())
+                            .setTitle("Error")
+                            .setMessage("Not a valid url!")
+                            .setPositiveButton("Ok", null)
+                            .show();
+                } else {
+                    m_imageCollectionModel.addImage(new MobileImageModel(m_imageCollectionModel, uri1));
+                }
+            }
+        }.execute();
     }
 
     @Override
@@ -199,8 +221,7 @@ public class MainActivity extends ActionBarActivity {
         }
     }
 
-    public static int calculateInSampleSize(
-            BitmapFactory.Options options, int reqWidth, int reqHeight) {
+    public static int calculateInSampleSize(BitmapFactory.Options options, int reqWidth, int reqHeight) {
         // Raw height and width of image
         final int height = options.outHeight;
         final int width = options.outWidth;

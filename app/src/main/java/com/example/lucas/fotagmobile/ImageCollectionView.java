@@ -34,7 +34,6 @@ public class ImageCollectionView extends LinearLayout implements ViewInterface {
 
 	private void init(Context ctx) {
 		LayoutInflater.from(ctx).inflate(R.layout.image_collection_view, this, true);
-		// extra init
 		MODEL.addObserver(this);
 	}
 

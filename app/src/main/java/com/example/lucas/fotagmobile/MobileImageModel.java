@@ -1,8 +1,5 @@
 package com.example.lucas.fotagmobile;
 
-import android.app.Activity;
-import android.graphics.Bitmap;
-
 import java.io.Serializable;
 
 public class MobileImageModel implements Serializable {

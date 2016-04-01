@@ -3,7 +3,6 @@ package com.example.lucas.fotagmobile;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TableLayout;
 
@@ -35,7 +34,6 @@ public class ImageCollectionListView extends LinearLayout implements ViewInterfa
 
     private void init(Context ctx) {
         LayoutInflater.from(ctx).inflate(R.layout.image_collection_list_view, this, true);
-        // extra init
         MODEL.addObserver(this);
     }
 
@@ -46,11 +44,10 @@ public class ImageCollectionListView extends LinearLayout implements ViewInterfa
         }
 
         TableLayout column = (TableLayout)findViewById(R.id.column);
-        //TableLayout c2 = (TableLayout)findViewById(R.id.second_column);
+
         if (m_imageViews.size() != MODEL.getVisibleImages()) {
             m_imageViews = new ArrayList<MobileImageView>();
             column.removeAllViews();
-            //c2.removeAllViews();
             for(int i = 0; i < MODEL.getImages().size(); i++) {
                 if (MODEL.getImages().get(i).getRating() < MODEL.getRatingFilter()) continue;
                 m_imageViews.add(new MobileImageView(MODEL.getImages().get(i), getContext()));
@@ -59,4 +56,3 @@ public class ImageCollectionListView extends LinearLayout implements ViewInterfa
         }
     }
 }
-
