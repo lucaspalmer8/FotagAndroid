@@ -1,5 +1,7 @@
 package com.example.lucas.fotagmobile;
 
+import android.app.Activity;
+
 import java.util.ArrayList;
 
 public class ImageCollectionModel {
@@ -7,8 +9,14 @@ public class ImageCollectionModel {
 	private ArrayList<ViewInterface> m_observers = new ArrayList<ViewInterface>();
 	private ArrayList<MobileImageModel> m_images = new ArrayList<MobileImageModel>();
 	private int m_ratingFilter = 0;
+	private MainActivity m_mainActivity = null;
 
-	public ImageCollectionModel() {
+	public ImageCollectionModel(MainActivity activity) {
+		m_mainActivity = activity;
+	}
+
+	public MainActivity getMainActivity() {
+		return m_mainActivity;
 	}
 
 	public void loadImages() {
@@ -28,6 +36,11 @@ public class ImageCollectionModel {
 
 	public void resetImages() {
 		m_images = new ArrayList<MobileImageModel>();
+		notifyViews();
+	}
+
+	public void addImage(MobileImageModel model) {
+		m_images.add(model);
 		notifyViews();
 	}
 

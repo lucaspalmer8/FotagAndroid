@@ -1,13 +1,18 @@
 package com.example.lucas.fotagmobile;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.net.Uri;
+import android.provider.MediaStore;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+
+import java.io.FileNotFoundException;
 
 public class MobileImageView extends LinearLayout implements ViewInterface {
 
@@ -42,8 +47,24 @@ public class MobileImageView extends LinearLayout implements ViewInterface {
 		LinearLayout.LayoutParams imagelp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 400);
 		ImageView image = new ImageView(getContext());
 		image.setLayoutParams(imagelp);
-		image.setImageBitmap(
-				MainActivity.decodeSampledBitmapFromResource(getResources(), m_model.getResourceId(), 50, 50));
+
+		if (m_model.getUri() != null) {
+			Bitmap bitmap = null;
+			try {
+				bitmap = MediaStore.Images.Media.getBitmap(getContext().getContentResolver(), Uri.parse(m_model.getUri()));
+			} catch (Exception e) {
+			}
+			image.setImageBitmap(bitmap);
+		} else {
+			image.setImageBitmap(
+					MainActivity.decodeSampledBitmapFromResource(getResources(), m_model.getResourceId(), 50, 50));
+		}
+		image.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				m_model.getMainActivity().showImage(m_model.getResourceId());
+			}
+		});
 		addView(image);
 		addView(m_ratingBar);
 	}

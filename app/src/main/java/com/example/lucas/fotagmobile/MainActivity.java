@@ -1,37 +1,36 @@
 package com.example.lucas.fotagmobile;
 
-import android.app.ActionBar;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
+import android.net.Uri;
+import android.provider.MediaStore;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
-import android.support.v7.internal.view.menu.ActionMenuItem;
-import android.support.v7.internal.view.menu.ActionMenuItemView;
-import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
-import android.widget.ImageButton;
+import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.TableLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import java.net.URL;
 import java.util.ArrayList;
 
 public class MainActivity extends ActionBarActivity {
+    //For saving and restoring state.
     private static String SAVED_STATE = "saved_state_array";
     private static String SAVED_RATING = "saved_rating";
+    //To save memory, reuse the same images.
     private static Bitmap STAR = null;
     private static Bitmap EMPTY = null;
-    private ImageCollectionModel m_imageCollectionModel = null;
-    private int[] m_ratingids = {R.id.imageView1, R.id.imageView2, R.id.imageView3, R.id.imageView4, R.id.imageView5};
+    //Model that stores all the image data.
+    private ImageCollectionModel m_imageCollectionModel;
+    //Ids of every rating bar star.
+    private int[] m_ratingIds = {R.id.imageView1, R.id.imageView2, R.id.imageView3, R.id.imageView4, R.id.imageView5};
+    //Menu bar reference to make changes.
     private View m_menu;
 
     @Override
@@ -44,7 +43,7 @@ public class MainActivity extends ActionBarActivity {
             EMPTY = MainActivity.decodeSampledBitmapFromResource(getResources(), R.drawable.emptystar, 50, 50);
         }
 
-        m_imageCollectionModel = new ImageCollectionModel();
+        m_imageCollectionModel = new ImageCollectionModel(this);
 
         if (savedInstanceState != null) {
             ArrayList<MobileImageModel> imageList =
@@ -76,7 +75,7 @@ public class MainActivity extends ActionBarActivity {
 
         ImageView view;
         for (int i = 0; i < m_imageCollectionModel.getRatingFilter(); i++) {
-            view = (ImageView) m_menu.findViewById(m_ratingids[i]);
+            view = (ImageView) m_menu.findViewById(m_ratingIds[i]);
             final int k = 1;
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -86,8 +85,8 @@ public class MainActivity extends ActionBarActivity {
                 }
             });
         }
-        for (int i = m_imageCollectionModel.getRatingFilter(); i < m_ratingids.length; i++) {
-            view = (ImageView) m_menu.findViewById(m_ratingids[i]);
+        for (int i = m_imageCollectionModel.getRatingFilter(); i < m_ratingIds.length; i++) {
+            view = (ImageView) m_menu.findViewById(m_ratingIds[i]);
             final int k = i;
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -104,6 +103,32 @@ public class MainActivity extends ActionBarActivity {
             public void onClick(View v) {
                 m_imageCollectionModel.setRatingFilter(0);
                 setUpRatingBar();
+            }
+        });
+        view = (ImageView) m_menu.findViewById(R.id.uriButton);
+        view.setImageBitmap(MainActivity.decodeSampledBitmapFromResource(getResources(), R.drawable.web, 100, 100));
+        view.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final EditText txtUrl = new EditText(v.getContext());
+
+                txtUrl.setText("http://www.librarising.com/astrology/celebs/images2/QR/queenelizabethii.jpg");
+                final View v2 = v;
+                new AlertDialog.Builder(v.getContext())
+                        .setTitle("Image Uri Selection")
+                        .setMessage("Paste in the link of an image!")
+                        .setView(txtUrl)
+                        .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int whichButton) {
+                                String uri = txtUrl.getText().toString();
+                                addUri(uri, v2);
+                            }
+                        })
+                        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int whichButton) {
+                            }
+                        })
+                        .show();
             }
         });
         view = (ImageView) m_menu.findViewById(R.id.loadButton);
@@ -126,6 +151,34 @@ public class MainActivity extends ActionBarActivity {
         mActionBar.setDisplayShowCustomEnabled(true);
     }
 
+    public void showImage(int id) {
+        Intent i = new Intent(getApplicationContext(), ImageDialog.class);
+        i.putExtra(ImageDialog.IMAGE_ID, id);
+        startActivity(i);
+    }
+
+    public void addUri(String uri, View v) {
+        //Bitmap bitmap = null;
+        Bitmap bmp = null;
+
+        try {
+            bmp = MediaStore.Images.Media.getBitmap(this.getContentResolver(), Uri.parse("content://" + uri));
+            //URL url = new URL(uri);
+            //bmp = BitmapFactory.decodeStream(url.openConnection().getInputStream());
+            //bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), Uri.parse("file://" + uri));
+        } catch (Exception e) {
+            System.out.println("Ehhhhhhhhhhhhhhhhhh:   " + e);
+            System.out.println(uri);
+            new AlertDialog.Builder(v.getContext())
+                    .setTitle("Error")
+                    .setMessage("Not a valid url!")
+                    .setPositiveButton("Ok", null)
+                    .show();
+            return;
+        }
+        m_imageCollectionModel.addImage(new MobileImageModel(m_imageCollectionModel, uri));
+    }
+
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
@@ -136,11 +189,11 @@ public class MainActivity extends ActionBarActivity {
     public void setUpRatingBar() {
         ImageView view;
         for (int i = 0; i < m_imageCollectionModel.getRatingFilter(); i++) {
-            view = (ImageView) m_menu.findViewById(m_ratingids[i]);
+            view = (ImageView) m_menu.findViewById(m_ratingIds[i]);
             view.setImageBitmap(STAR);
         }
-        for (int i = m_imageCollectionModel.getRatingFilter(); i < m_ratingids.length; i++) {
-            view = (ImageView) m_menu.findViewById(m_ratingids[i]);
+        for (int i = m_imageCollectionModel.getRatingFilter(); i < m_ratingIds.length; i++) {
+            view = (ImageView) m_menu.findViewById(m_ratingIds[i]);
             view.setImageBitmap(EMPTY);
         }
     }
