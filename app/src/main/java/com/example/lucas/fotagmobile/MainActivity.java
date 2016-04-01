@@ -151,9 +151,10 @@ public class MainActivity extends ActionBarActivity {
         mActionBar.setDisplayShowCustomEnabled(true);
     }
 
-    public void showImage(int id) {
+    public void showImage(int id, String uri) {
         Intent i = new Intent(getApplicationContext(), ImageDialog.class);
         i.putExtra(ImageDialog.IMAGE_ID, id);
+        i.putExtra(ImageDialog.IMAGE_URI, uri);
         startActivity(i);
     }
 
@@ -161,7 +162,7 @@ public class MainActivity extends ActionBarActivity {
         //Bitmap bitmap = null;
         Bitmap bmp = null;
 
-        try {
+        /*try {
             bmp = MediaStore.Images.Media.getBitmap(this.getContentResolver(), Uri.parse("content://" + uri));
             //URL url = new URL(uri);
             //bmp = BitmapFactory.decodeStream(url.openConnection().getInputStream());
@@ -175,7 +176,7 @@ public class MainActivity extends ActionBarActivity {
                     .setPositiveButton("Ok", null)
                     .show();
             return;
-        }
+        }*/
         m_imageCollectionModel.addImage(new MobileImageModel(m_imageCollectionModel, uri));
     }
 

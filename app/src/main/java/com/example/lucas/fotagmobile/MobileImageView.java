@@ -3,8 +3,10 @@ package com.example.lucas.fotagmobile;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.provider.MediaStore;
 import android.view.Gravity;
 import android.view.View;
@@ -13,6 +15,8 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import java.io.FileNotFoundException;
+import java.io.InputStream;
+import java.net.URL;
 
 public class MobileImageView extends LinearLayout implements ViewInterface {
 
@@ -21,6 +25,8 @@ public class MobileImageView extends LinearLayout implements ViewInterface {
 	private static Bitmap STAR = null;
 	private static Bitmap EMPTY = null;
 	private static Bitmap RESET = null;
+
+	private Bitmap bmp;
 
 	public MobileImageView(MobileImageModel model, Context context) {
 		super(context);
@@ -45,16 +51,30 @@ public class MobileImageView extends LinearLayout implements ViewInterface {
 		setPadding(20, 50, 20, 50);
 
 		LinearLayout.LayoutParams imagelp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 400);
-		ImageView image = new ImageView(getContext());
+		final ImageView image = new ImageView(getContext());
 		image.setLayoutParams(imagelp);
 
 		if (m_model.getUri() != null) {
-			Bitmap bitmap = null;
-			try {
-				bitmap = MediaStore.Images.Media.getBitmap(getContext().getContentResolver(), Uri.parse(m_model.getUri()));
-			} catch (Exception e) {
-			}
-			image.setImageBitmap(bitmap);
+			new AsyncTask<Void, Void, Void>() {
+				@Override
+				protected Void doInBackground(Void... params) {
+					try {
+						InputStream in = new URL(m_model.getUri()).openStream();
+						bmp = BitmapFactory.decodeStream(in);
+					} catch (Exception e) {
+						// log error
+					}
+					return null;
+				}
+
+				@Override
+				protected void onPostExecute(Void result) {
+					if (bmp != null)
+						image.setImageBitmap(bmp);
+				}
+
+			}.execute();
+
 		} else {
 			image.setImageBitmap(
 					MainActivity.decodeSampledBitmapFromResource(getResources(), m_model.getResourceId(), 50, 50));
@@ -62,7 +82,7 @@ public class MobileImageView extends LinearLayout implements ViewInterface {
 		image.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				m_model.getMainActivity().showImage(m_model.getResourceId());
+				m_model.getMainActivity().showImage(m_model.getResourceId(), m_model.getUri());
 			}
 		});
 		addView(image);
